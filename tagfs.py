@@ -1,17 +1,19 @@
 #!/usr/bin/env python3
 
 import os
-import resource
 import sys
-from turtle import down
+import logging
 import TagHandler
 
 _tagfsdb = ".tagfs.db"
 
+logging.basicConfig(level='INFO')
+logobj = logging.getLogger(__name__)
+
 def initTagFs():
-    th = TagHandler.TagHandler(_tagfsdb)
-    s = "TAGFS: initialized in " + os.path.realpath(os.curdir)
-    print(s)
+    TagHandler.TagHandler(_tagfsdb)
+    s = "initialized in " + os.path.realpath(os.curdir)
+    logobj.info(s)
 
 def getTagFsBoundary() :
     tag_fs_db_file = _tagfsdb
@@ -32,7 +34,7 @@ def getRelativePath(url, base_path) :
 def getTagDB() :
     tag_boundary = getTagFsBoundary()
     if tag_boundary == None :
-        print("TAGFS: not initalized")
+        logobj.error("db not initialized")
         exit(1)
     tagdb = tag_boundary + "/" + _tagfsdb
     return tagdb
@@ -87,7 +89,7 @@ def tagResource(resource_url, tags) :
     th = TagHandler.TagHandler(getTagDB())
     unsuccessful_tags = th.addResourceTags(resource_url, tags)
     if len(unsuccessful_tags) > 0 :
-        print("TAGFS: following tags not in db " + str(unsuccessful_tags))
+        logobj.warning("TAGFS: following tags not in db " + str(unsuccessful_tags))
 
 def getResourcesByTag(tags) :
     tags_closure = getTagClosure(tags)
@@ -123,19 +125,19 @@ def tagfs(arg) :
         initTagFs()
     elif arg[0] == "getboundary" :
         bdr = getTagFsBoundary()
-        if bdr != None :
-            print(bdr)
-        else :
-            print("TAGFS: not initialized")
+        if bdr == None :
+            logobj.error("db not initialized")
+            exit(1)
+        print(bdr)
     elif arg[0] == "lstags" :
         getTagList(arg[1:])
     elif arg[0] == "addtags" :
         addTags(arg[1:])
     elif arg[0] == "linktags" :
         linkTags(arg[1], arg[2])
-        print("TAGFS: " + arg[1] + " ---> " + arg[2])
+        logobj.info(arg[1] + " --linked--> " + arg[2])
     elif arg[0] == "unlinktags" :
-        print("TAGFS: Unimplemented feature")
+        logobj.error("unimplemented feature")
         exit(1)
     elif arg[0] == "addresource" :
         addResource(arg[1])
@@ -146,7 +148,7 @@ def tagfs(arg) :
     elif arg[0] == "help" :
         printUsage()
     else :
-        print("TAGFS: Unknown input")
+        logobj.error("unknown input")
         printUsage()
         exit(1)
     exit(0)
