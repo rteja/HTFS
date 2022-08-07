@@ -1,7 +1,8 @@
 import os
-import resource
 import sqlite3
+import logging
 
+logobj = logging.getLogger(__name__)
 class TagHandler() :
     def __init__(self, tagdb_file):
         self.tagdb = tagdb_file
@@ -79,9 +80,14 @@ class TagHandler() :
     def linkTag(self, tag_name, tag_parent_name) :
         src_tag_id = self.getTagId(tag_name)
         parent_tag_id = self.getTagId(tag_parent_name)
+        if (src_tag_id < 0 | parent_tag_id < 0) :
+            if src_tag_id < 0 :
+                logobj.error("tags not in db")
+            return False
         query_str = "INSERT INTO TAGLINKS VALUES (" + str(src_tag_id) + "," + str(parent_tag_id) + ");"
         self.conn.execute(query_str)
         self.conn.commit()
+        return True
 
     def getParentTagsById(self, tag_id) -> list :
         query_str = "SELECT TAGPARENTID FROM TAGLINKS WHERE TAGID=" + str(tag_id) + ";"
@@ -131,6 +137,16 @@ class TagHandler() :
         downstream_tagids = self.getDownstreamTagsById(tag_id)
         downstream_tags = map(self.getTagName, downstream_tagids)
         return list(downstream_tags)
+    
+    def getTagClosure(self, tags) :
+        tags_closure = []
+        for tag in tags :
+            tags_closure.append(tag)
+            downstreamtags = self.getDownstreamTags(tag)
+            for dtag in downstreamtags :
+                tags_closure.append(dtag)
+        tags_closure = list(set(tags_closure))
+        return tags_closure
 
     def addResource(self, resourceurl) :
         res = self.conn.execute("SELECT max(ID) FROM RESOURCES;")

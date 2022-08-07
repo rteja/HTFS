@@ -39,24 +39,13 @@ def getTagDB() :
     tagdb = tag_boundary + "/" + _tagfsdb
     return tagdb
 
-def getTagClosure(tags) :
-    th = TagHandler.TagHandler(getTagDB())
-    tags_closure = []
-    for tag in tags :
-        tags_closure.append(tag)
-        downstreamtags = th.getDownstreamTags(tag)
-        for dtag in downstreamtags :
-            tags_closure.append(dtag)
-    tags_closure = list(set(tags_closure))
-    return tags_closure
-
 def getTagList(tags) :
     taglist = []
     th = TagHandler.TagHandler(getTagDB())
     if len(tags) == 0 :
         taglist = th.getTagList()
     else :
-        taglist = getTagClosure(tags)
+        taglist = th.getTagClosure(tags)
 
     for tag in taglist :
         print(tag)
@@ -101,6 +90,7 @@ def getResourcesByTag(tags) :
 def linkTags(tag, parent_tag) :
     th = TagHandler.TagHandler(getTagDB())
     th.linkTag(tag, parent_tag)
+    
 
 
 def printUsage():
