@@ -12,8 +12,7 @@ logobj = logging.getLogger(__name__)
 
 def initTagFs():
     TagHandler.TagHandler(_tagfsdb)
-    s = "initialized in " + os.path.realpath(os.curdir)
-    logobj.info(s)
+    logobj.info("initialized in " + os.path.realpath(os.curdir))
 
 def getTagFsBoundary() :
     tag_fs_db_file = _tagfsdb
