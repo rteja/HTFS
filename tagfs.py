@@ -78,18 +78,20 @@ def tagResource(resource_url, tags) :
     th = TagHandler.TagHandler(getTagDB())
     unsuccessful_tags = th.addResourceTags(resource_url, tags)
     if len(unsuccessful_tags) > 0 :
-        logobj.warning("TAGFS: following tags not in db " + str(unsuccessful_tags))
+        logobj.warning("following tags not in db " + str(unsuccessful_tags))
 
 def getResourcesByTag(tags) :
-    tags_closure = getTagClosure(tags)
     th = TagHandler.TagHandler(getTagDB())
+    tags_closure = th.getTagClosure(tags)
     resource_urls = th.getResourcesByTag(tags_closure)
     for res in resource_urls :
         print(fullUrl(res))
 
 def linkTags(tag, parent_tag) :
     th = TagHandler.TagHandler(getTagDB())
-    th.linkTag(tag, parent_tag)
+    res = th.linkTag(tag, parent_tag)
+    if not res :
+        logobj.error("invalid tags used.")
     
 
 
@@ -125,7 +127,6 @@ def tagfs(arg) :
         addTags(arg[1:])
     elif arg[0] == "linktags" :
         linkTags(arg[1], arg[2])
-        logobj.info(arg[1] + " --linked--> " + arg[2])
     elif arg[0] == "unlinktags" :
         logobj.error("unimplemented feature")
         exit(1)

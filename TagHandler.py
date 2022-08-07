@@ -80,7 +80,7 @@ class TagHandler() :
     def linkTag(self, tag_name, tag_parent_name) :
         src_tag_id = self.getTagId(tag_name)
         parent_tag_id = self.getTagId(tag_parent_name)
-        if (src_tag_id < 0 | parent_tag_id < 0) :
+        if (src_tag_id < 0 or parent_tag_id < 0) :
             if src_tag_id < 0 :
                 logobj.error("tags not in db")
             return False
