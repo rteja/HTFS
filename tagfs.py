@@ -24,8 +24,8 @@ def getTagFsBoundary() :
             # this is os dependent -- reconsider this implementation
             if os.path.realpath(tag_fs_db_file_path) == "/" :
                 return None
-        tag_fs_db_file_path = os.path.pardir + "/" + tag_fs_db_file_path        
-        tag_fs_db_file = tag_fs_db_file_path + tag_fs_db_file
+        tag_fs_db_file_path = os.path.pardir + "/" + tag_fs_db_file_path
+        tag_fs_db_file = tag_fs_db_file_path + _tagfsdb
 
 def getRelativePath(url, base_path) :
     return os.path.relpath(url, base_path)
@@ -45,7 +45,6 @@ def getTagList(tags) :
         taglist = th.getTagList()
     else :
         taglist = th.getTagClosure(tags)
-
     for tag in taglist :
         print(tag)
 
