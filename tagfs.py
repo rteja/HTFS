@@ -43,7 +43,7 @@ def get_tags_list(tags) :
     taglist = []
     th = TagHandler.TagHandler(get_tags_db())
     if len(tags) == 0 :
-        taglist = th.get_tags_list()
+        taglist = th.get_tag_list()
     else :
         taglist = th.get_tag_closure(tags)
     for tag in taglist :
