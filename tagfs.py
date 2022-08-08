@@ -58,6 +58,7 @@ def normalize_url(resource_url) :
     tagdb = get_tags_db()
     tag_boundary = os.path.dirname(tagdb)
     normalized_url = get_relative_path(os.path.realpath(resource_url), tag_boundary)
+    normalized_url = normalized_url.replace("\\","/")
     return normalized_url
 
 def full_url(normzlied_resource_url) :
