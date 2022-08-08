@@ -38,7 +38,7 @@ class TagHandler() :
         self.conn.commit()
 
     # can also be used to check if tag is valid
-    def getTagId(self, tag_name) -> int:
+    def get_tag_id(self, tag_name) -> int:
         query_str = "SELECT ID FROM TAGS WHERE TAGNAME='" + tag_name + "';"
         res = self.conn.execute(query_str)
         r = res.fetchone()
@@ -47,7 +47,7 @@ class TagHandler() :
             tid = r[0]
         return tid
 
-    def getTagName(self, tag_id) -> str:
+    def get_tag_name(self, tag_id) -> str:
         query_str = "SELECT TAGNAME FROM TAGS WHERE ID=" + str(tag_id) + ";"
         res = self.conn.execute(query_str)
         r = res.fetchone()
@@ -56,7 +56,7 @@ class TagHandler() :
             tag_name = str(r[0])
         return tag_name
     
-    def getTagList(self) -> list:
+    def get_tag_list(self) -> list:
         query_str = "SELECT TAGNAME FROM TAGS WHERE ID > 0;"
         res = self.conn.execute(query_str)
         taglist = []
@@ -64,8 +64,8 @@ class TagHandler() :
             taglist.append(r[0])
         return taglist
 
-    def addTag(self, tag_name) -> int :
-        tag_exists = self.getTagId(tag_name)
+    def add_tag(self, tag_name) -> int :
+        tag_exists = self.get_tag_id(tag_name)
         if tag_exists > 0 :
             return tag_exists
         res = self.conn.execute("SELECT max(ID) FROM TAGS;")
@@ -77,9 +77,9 @@ class TagHandler() :
         self.conn.commit()
         return new_tag_id
 
-    def linkTag(self, tag_name, tag_parent_name) :
-        src_tag_id = self.getTagId(tag_name)
-        parent_tag_id = self.getTagId(tag_parent_name)
+    def link_tag(self, tag_name, tag_parent_name) :
+        src_tag_id = self.get_tag_id(tag_name)
+        parent_tag_id = self.get_tag_id(tag_parent_name)
         if (src_tag_id < 0 or parent_tag_id < 0) :
             if src_tag_id < 0 :
                 logobj.error("tags not in db")
@@ -89,7 +89,7 @@ class TagHandler() :
         self.conn.commit()
         return True
 
-    def getParentTagsById(self, tag_id) -> list :
+    def get_parent_tags_by_id(self, tag_id) -> list :
         query_str = "SELECT TAGPARENTID FROM TAGLINKS WHERE TAGID=" + str(tag_id) + ";"
         res = self.conn.execute(query_str)
         parent_ids = []
@@ -97,13 +97,13 @@ class TagHandler() :
             parent_ids.append(r[0])
         return parent_ids
 
-    def getParentTags(self, tag_name) -> list :
-        tag_id = self.getTagId(tag_name)
-        parent_ids = self.getParentTagsById(tag_id)
-        parent_tags = map(self.getTagName, parent_ids)
+    def get_parent_tags(self, tag_name) -> list :
+        tag_id = self.get_tag_id(tag_name)
+        parent_ids = self.get_parent_tags_by_id(tag_id)
+        parent_tags = map(self.get_tag_name, parent_ids)
         return list(parent_tags)
 
-    def getChildTagsById(self, tag_id) -> list :
+    def get_child_tags_by_id(self, tag_id) -> list :
         query_str = "SELECT TAGID FROM TAGLINKS WHERE TAGPARENTID=" + str(tag_id) + ";"
         res = self.conn.execute(query_str)
         child_ids = []
@@ -111,13 +111,13 @@ class TagHandler() :
             child_ids.append(r[0])
         return child_ids
 
-    def getChildTags(self, tag_name) -> list :
-        tag_id = self.getTagId(tag_name)
-        child_ids = self.getChildTagsById(tag_id)
-        child_tags = map(self.getTagName, child_ids)
+    def get_child_tags(self, tag_name) -> list :
+        tag_id = self.get_tag_id(tag_name)
+        child_ids = self.get_child_tags_by_id(tag_id)
+        child_tags = map(self.get_tag_name, child_ids)
         return list(child_tags)
 
-    def getDownstreamTagsById(self, tag_id) -> list :
+    def get_downstream_tags_by_id(self, tag_id) -> list :
         traverse_ids = [tag_id]
         downstream_ids = []
         visited_ids = set()
@@ -126,33 +126,33 @@ class TagHandler() :
             if node_id in visited_ids :
                 continue
             visited_ids.add(node_id)
-            child_ids = self.getChildTagsById(node_id)
+            child_ids = self.get_child_tags_by_id(node_id)
             for cid in child_ids :
                 downstream_ids.append(cid)
                 traverse_ids.append(cid)
         return downstream_ids
 
-    def getDownstreamTags(self, tag_name) -> list :
-        tag_id = self.getTagId(tag_name)
-        downstream_tagids = self.getDownstreamTagsById(tag_id)
-        downstream_tags = map(self.getTagName, downstream_tagids)
+    def get_downstream_tags(self, tag_name) -> list :
+        tag_id = self.get_tag_id(tag_name)
+        downstream_tagids = self.get_downstream_tags_by_id(tag_id)
+        downstream_tags = map(self.get_tag_name, downstream_tagids)
         return list(downstream_tags)
     
-    def getTagClosure(self, tags) :
+    def get_tag_closure(self, tags) :
         tags_closure = []
         for tag in tags :
-            tagid = self.getTagId(tag)
+            tagid = self.get_tag_id(tag)
             if tagid < 0 :
                 logobj.warning("tag " + tag + " not present in the db")
                 continue
             tags_closure.append(tag)
-            downstreamtags = self.getDownstreamTags(tag)
+            downstreamtags = self.get_downstream_tags(tag)
             for dtag in downstreamtags :
                 tags_closure.append(dtag)
         tags_closure = list(set(tags_closure))
         return tags_closure
 
-    def addResource(self, resourceurl) :
+    def add_resource(self, resourceurl) :
         res = self.conn.execute("SELECT max(ID) FROM RESOURCES;")
         r = res.fetchone()
         max_res_id = 0
@@ -164,14 +164,14 @@ class TagHandler() :
         self.conn.commit()
         return new_res_id
 
-    def getResourceIds(self) :
+    def get_resource_ids(self) :
         res = self.conn.execute("SELECT ID FROM RESOURCES WHERE ID > 0;")
         tag_ids = []
         for r in res :
             tag_ids.append(r[0])
         return tag_ids
 
-    def getResourceUrl(self, res_id) :
+    def get_resource_url(self, res_id) :
         query_str = "SELECT URL FROM RESOURCES WHERE ID=" + str(res_id)+ ";"
         res = self.conn.execute(query_str)
         r = res.fetchone()
@@ -180,7 +180,7 @@ class TagHandler() :
             url = r[0]
         return url
 
-    def getResourceId(self, resourceurl) :
+    def get_resource_id(self, resourceurl) :
         query_str = "SELECT ID FROM RESOURCES WHERE URL=\"" + resourceurl + "\";"
         res = self.conn.execute(query_str)
         r = res.fetchone()
@@ -189,7 +189,7 @@ class TagHandler() :
             res_id = r[0]
         return res_id
  
-    def getResourceTagsById(self, resource_id) -> list :
+    def get_resource_tags_by_id(self, resource_id) -> list :
         query_str = "SELECT TAGID FROM RESOURCELINKS WHERE RESID=" + str(resource_id) + ";"
         res = self.conn.execute(query_str)
         tag_ids = []
@@ -197,43 +197,43 @@ class TagHandler() :
             tag_ids.append(r[0])
         return tag_ids 
 
-    def addResourceTagById(self, resource_id, tag_id) :
-        current_tags = self.getResourceTagsById(resource_id)
+    def add_resource_tag_by_id(self, resource_id, tag_id) :
+        current_tags = self.get_resource_tags_by_id(resource_id)
         if current_tags.count(tag_id) == 0 :
             query_str = "INSERT INTO RESOURCELINKS VALUES (" + str(resource_id) + "," + str(tag_id) + ");"
             self.conn.execute(query_str)
             self.conn.commit()
         
-    def delResourceTagById(self, resource_id, tag_id) :
-        current_tags = self.getResourceTagsById(resource_id)
+    def del_resource_tag_by_id(self, resource_id, tag_id) :
+        current_tags = self.get_resource_tags_by_id(resource_id)
         if current_tags.count(tag_id) > 0 :
             query_str = "DELETE FROM RESOURCELINKS WHERE RESID=" + str(resource_id) + " AND TAGID=" + str(tag_id) + ";"
             self.conn.execute(query_str)
             self.conn.commit()
     
-    def delResourceTags(self, resourceurl, tags) :
-        res_id = self.getResourceId(resourceurl)
-        tag_ids = list(map(self.getTagId, tags))
+    def del_resource_tags(self, resourceurl, tags) :
+        res_id = self.get_resource_id(resourceurl)
+        tag_ids = list(map(self.get_tag_id, tags))
         for tid in tag_ids :
-            self.delResourceTagById(res_id, tid)
+            self.del_resource_tag_by_id(res_id, tid)
         
-    def addResourceTags(self, resourceurl, tags) :
-        res_id = self.getResourceId(resourceurl)
+    def add_resource_tags(self, resourceurl, tags) :
+        res_id = self.get_resource_id(resourceurl)
         unsuccessful_tags = []
         for tag in tags :
-            tag_id = self.getTagId(tag)
+            tag_id = self.get_tag_id(tag)
             if tag_id > 0 :
-                self.addResourceTagById(res_id, tag_id)
+                self.add_resource_tag_by_id(res_id, tag_id)
             else :
                 unsuccessful_tags.append(tag)
         return unsuccessful_tags
 
-    def getResourceTags(self, resourceurl) :
-        res_id = self.getResourceId(resourceurl)
-        tag_ids = self.getResourceTagsById(res_id)
-        return list(map(self.getTagName, tag_ids))
+    def get_resource_tags(self, resourceurl) :
+        res_id = self.get_resource_id(resourceurl)
+        tag_ids = self.get_resource_tags_by_id(res_id)
+        return list(map(self.get_tag_name, tag_ids))
 
-    def getResourcesByTagId(self, tag_ids) :
+    def get_resources_by_tag_id(self, tag_ids) :
         resource_ids = []
         for tid in tag_ids :
             query_str = "SELECT RESID FROM RESOURCELINKS WHERE TAGID=" + str(tid) + ";"
@@ -243,10 +243,10 @@ class TagHandler() :
         resource_ids = list(set(resource_ids))
         return resource_ids    
 
-    def getResourcesByTag(self, tags) :
-        tag_ids = list(map(self.getTagId, tags))
-        res_ids = self.getResourcesByTagId(tag_ids)
-        res = list(map(self.getResourceUrl, res_ids))
+    def get_resources_by_tag(self, tags) :
+        tag_ids = list(map(self.get_tag_id, tags))
+        res_ids = self.get_resources_by_tag_id(tag_ids)
+        res = list(map(self.get_resource_url, res_ids))
         return res
 
 
@@ -256,43 +256,43 @@ def test():
     if os.path.exists(testdb) :
         os.remove(testdb)
     th = TagHandler('testdb.db')
-    th.addTag("eresources")
-    th.addTag("books")
-    th.addTag("articles")
-    th.addTag("researchpaper")
-    th.linkTag("books", "eresources")
-    th.linkTag("articles", "eresources")
-    th.linkTag("researchpaper", "articles")
+    th.add_tag("eresources")
+    th.add_tag("books")
+    th.add_tag("articles")
+    th.add_tag("researchpaper")
+    th.link_tag("books", "eresources")
+    th.link_tag("articles", "eresources")
+    th.link_tag("researchpaper", "articles")
 
-    th.addTag("topics")
-    th.addTag("mathematics")
-    th.addTag("appliedmathematics")
-    th.addTag("calculus")
-    th.addTag("physics")
-    th.linkTag("mathematics", "topics")
-    th.linkTag("physics", "topics")
-    th.linkTag("appliedmathematics", "mathematics")
-    th.linkTag("calculus", "mathematics")
+    th.add_tag("topics")
+    th.add_tag("mathematics")
+    th.add_tag("appliedmathematics")
+    th.add_tag("calculus")
+    th.add_tag("physics")
+    th.link_tag("mathematics", "topics")
+    th.link_tag("physics", "topics")
+    th.link_tag("appliedmathematics", "mathematics")
+    th.link_tag("calculus", "mathematics")
 
-    pids = th.getParentTags("articles")
+    pids = th.get_parent_tags("articles")
     print(pids)
-    tid = th.getTagId("books")
+    tid = th.get_tag_id("books")
     print(tid)
-    tname = th.getTagName(tid)
+    tname = th.get_tag_name(tid)
     print(tname)
-    cids = th.getChildTags("eresources")
+    cids = th.get_child_tags("eresources")
     print(cids)
-    dids = th.getDownstreamTags("eresources")
+    dids = th.get_downstream_tags("eresources")
     print(dids)
-    dids = th.getDownstreamTags("topics")
+    dids = th.get_downstream_tags("topics")
     print(dids)
 
     res_path = "/this/is/dummy/path"
     th.addResource(res_path)
-    rid = th.getResourceId(res_path)
+    rid = th.get_resource_id(res_path)
     print(rid)
-    th.addResourceTags(res_path, ["books", "calculus"])
-    tags = th.getResourceTags(res_path)
+    th.add_resource_tags(res_path, ["books", "calculus"])
+    tags = th.get_resource_tags(res_path)
     print(tags)
 
 

@@ -11,11 +11,11 @@ _tagfsdb = ".tagfs.db"
 logging.basicConfig(level='INFO')
 logobj = logging.getLogger(__name__)
 
-def initTagFs():
+def init_tag_fs():
     TagHandler.TagHandler(_tagfsdb)
     logobj.info("initialized in " + os.path.realpath(os.curdir))
 
-def getTagFsBoundary() :
+def get_tag_fs_boundary() :
     tag_fs_db_file = _tagfsdb
     tag_fs_db_file_path = ""
     while True :
@@ -28,77 +28,77 @@ def getTagFsBoundary() :
         tag_fs_db_file_path = os.path.pardir + "/" + tag_fs_db_file_path
         tag_fs_db_file = tag_fs_db_file_path + _tagfsdb
 
-def getRelativePath(url, base_path) :
+def get_relative_path(url, base_path) :
     return os.path.relpath(url, base_path)
 
-def getTagDB() :
-    tag_boundary = getTagFsBoundary()
+def get_tags_db() :
+    tag_boundary = get_tag_fs_boundary()
     if tag_boundary == None :
         logobj.error("db not initialized")
         exit(1)
     tagdb = tag_boundary + "/" + _tagfsdb
     return tagdb
 
-def getTagList(tags) :
+def get_tags_list(tags) :
     taglist = []
-    th = TagHandler.TagHandler(getTagDB())
+    th = TagHandler.TagHandler(get_tags_db())
     if len(tags) == 0 :
-        taglist = th.getTagList()
+        taglist = th.get_tags_list()
     else :
-        taglist = th.getTagClosure(tags)
+        taglist = th.get_tag_closure(tags)
     for tag in taglist :
         print(tag)
 
-def addTags(tags) :
-    th = TagHandler.TagHandler(getTagDB())
+def add_tags(tags) :
+    th = TagHandler.TagHandler(get_tags_db())
     for tag in tags :
         th.addTag(tag)
 
-def normalizeUrl(resource_url) :
-    tagdb = getTagDB()
+def normalize_url(resource_url) :
+    tagdb = get_tags_db()
     tag_boundary = os.path.dirname(tagdb)
-    normalized_url = getRelativePath(os.path.realpath(resource_url), tag_boundary)
+    normalized_url = get_relative_path(os.path.realpath(resource_url), tag_boundary)
     return normalized_url
 
-def fullUrl(normzlied_resource_url) :
-    url = getTagFsBoundary() + "/" + normzlied_resource_url
+def full_url(normzlied_resource_url) :
+    url = get_tag_fs_boundary() + "/" + normzlied_resource_url
     return url
         
-def addResource(resource_url) :
-    th = TagHandler.TagHandler(getTagDB())
-    resource_url = normalizeUrl(resource_url)
-    rid = th.getResourceId(resource_url)
+def add_resource(resource_url) :
+    th = TagHandler.TagHandler(get_tags_db())
+    resource_url = normalize_url(resource_url)
+    rid = th.get_resource_id(resource_url)
     if rid == -1 :
-        rid = th.addResource(resource_url)
+        rid = th.add_resource(resource_url)
     return rid
 
-def tagResource(resource_url, tags) :
-    resource_url = normalizeUrl(resource_url)
-    th = TagHandler.TagHandler(getTagDB())
-    unsuccessful_tags = th.addResourceTags(resource_url, tags)
+def tag_resource(resource_url, tags) :
+    resource_url = normalize_url(resource_url)
+    th = TagHandler.TagHandler(get_tags_db())
+    unsuccessful_tags = th.add_resourceTags(resource_url, tags)
     if len(unsuccessful_tags) > 0 :
         logobj.warning("following tags not in db " + str(unsuccessful_tags))
 
-def getResourcesByTag(tags) :
-    th = TagHandler.TagHandler(getTagDB())
-    tags_closure = th.getTagClosure(tags)
-    resource_urls = th.getResourcesByTag(tags_closure)
+def get_resources_by_tag(tags) :
+    th = TagHandler.TagHandler(get_tags_db())
+    tags_closure = th.get_tag_closure(tags)
+    resource_urls = th.get_resources_by_tag(tags_closure)
     for res in resource_urls :
-        print(fullUrl(res))
+        print(full_url(res))
     
-def getResourcesByTagExpr(tagsexpr) :
-    qe = QueryEvaluator.QueryEvaluator(getTagDB())
+def get_resources_by_tag_expr(tagsexpr) :
+    qe = QueryEvaluator.QueryEvaluator(get_tags_db())
     resource_urls = qe.evaluate_query(tagsexpr)
     for res in resource_urls :
-        print(fullUrl(res))
+        print(full_url(res))
 
-def linkTags(tag, parent_tag) :
-    th = TagHandler.TagHandler(getTagDB())
+def link_tags(tag, parent_tag) :
+    th = TagHandler.TagHandler(get_tags_db())
     res = th.linkTag(tag, parent_tag)
     if not res :
         logobj.error("invalid tags used.")
 
-def printUsage():
+def print_usage():
     print("HTFS: Hierarchially Tagged File System")
     cmd = "\t" + os.path.basename(sys.argv[0])
     print(cmd + " init \t\t initialize the tags db")
@@ -110,50 +110,51 @@ def printUsage():
     print(cmd + " tagresource \t add tags to tracked resources")
     print(cmd + " lsresources \t list resources with given tags")
 
-def unimplementedFeatureError() :
+def unimplemented_feature_error() :
     logobj.error("unimplemented feature")
+    exit(1)
+
+def improper_usage() :
+    logobj.error("improper usage")
+    print_usage()
     exit(1)
 
 def tagfs(arg) :
     if len(arg) == 0 :
-        printUsage()
-        exit(1)
+        improper_usage()
 
     if arg[0] == "init" :
-        initTagFs()
+        init_tag_fs()
     elif arg[0] == "getboundary" :
-        bdr = getTagFsBoundary()
+        bdr = get_tag_fs_boundary()
         if bdr == None :
-            logobj.error("db not initialized")
-            exit(1)
+            improper_usage()
         print(bdr)
     elif arg[0] == "lstags" :
-        getTagList(arg[1:])
+        get_tags_list(arg[1:])
     elif arg[0] == "addtags" :
-        addTags(arg[1:])
+        add_tags(arg[1:])
     elif arg[0] == "linktags" :
         if len(arg) < 3 :
-            logobj.error("improper usage")
-            printUsage()
-            exit(1)
-        linkTags(arg[1], arg[2])
+            improper_usage()
+        link_tags(arg[1], arg[2])
     elif arg[0] == "unlinktags" :
-        unimplementedFeatureError()
+        unimplemented_feature_error()
     elif arg[0] == "addresource" :
-        addResource(arg[1])
+        add_resource(arg[1])
     elif arg[0] == "tagresource" :
-        tagResource(arg[1], arg[2:])
+        tag_resource(arg[1], arg[2:])
     elif arg[0] == "lsresources" :
-        #getResourcesByTag(arg[1:])
-        getResourcesByTagExpr(arg[1])
+        #get_resources_by_tag(arg[1:])
+        get_resources_by_tag_expr(arg[1])
+    elif arg[0] == "getresourcetags" :
+        unimplemented_feature_error()
     elif arg[0] == "rmresource" :
-        unimplementedFeatureError()
+        unimplemented_feature_error()
     elif arg[0] == "help" :
-        printUsage()
+        print_usage()
     else :
-        logobj.error("unknown input")
-        printUsage()
-        exit(1)
+        improper_usage()
     exit(0)
 
 if __name__ == "__main__" :
