@@ -106,6 +106,10 @@ def printUsage():
     print(cmd + " lsresources \t list resources with given tags")
 
 
+def unimplementedFeatureError() :
+    logobj.error("unimplemented feature")
+    exit(1)
+
 def tagfs(arg) :
     if len(arg) == 0 :
         printUsage()
@@ -130,14 +134,15 @@ def tagfs(arg) :
             exit(1)
         linkTags(arg[1], arg[2])
     elif arg[0] == "unlinktags" :
-        logobj.error("unimplemented feature")
-        exit(1)
+        unimplementedFeatureError()
     elif arg[0] == "addresource" :
         addResource(arg[1])
     elif arg[0] == "tagresource" :
         tagResource(arg[1], arg[2:])
     elif arg[0] == "lsresources" :
         getResourcesByTag(arg[1:])
+    elif arg[0] == "rmresource" :
+        unimplementedFeatureError()
     elif arg[0] == "help" :
         printUsage()
     else :
