@@ -52,7 +52,7 @@ def get_tags_list(tags) :
 def add_tags(tags) :
     th = TagHandler.TagHandler(get_tags_db())
     for tag in tags :
-        th.addTag(tag)
+        th.add_tag(tag)
 
 def normalize_url(resource_url) :
     tagdb = get_tags_db()
@@ -95,7 +95,7 @@ def get_resources_by_tag_expr(tagsexpr) :
 
 def link_tags(tag, parent_tag) :
     th = TagHandler.TagHandler(get_tags_db())
-    res = th.linkTag(tag, parent_tag)
+    res = th.link_tag(tag, parent_tag)
     if not res :
         logobj.error("invalid tags used.")
 
