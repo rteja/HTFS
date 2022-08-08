@@ -75,7 +75,7 @@ def add_resource(resource_url) :
 def tag_resource(resource_url, tags) :
     resource_url = normalize_url(resource_url)
     th = TagHandler.TagHandler(get_tags_db())
-    unsuccessful_tags = th.add_resourceTags(resource_url, tags)
+    unsuccessful_tags = th.add_resource_tags(resource_url, tags)
     if len(unsuccessful_tags) > 0 :
         logobj.warning("following tags not in db " + str(unsuccessful_tags))
 
