@@ -164,6 +164,13 @@ class TagHandler() :
         self.conn.commit()
         return new_res_id
 
+    def getResourceIds(self) :
+        res = self.conn.execute("SELECT ID FROM RESOURCES WHERE ID > 0;")
+        tag_ids = []
+        for r in res :
+            tag_ids.append(r[0])
+        return tag_ids
+
     def getResourceUrl(self, res_id) :
         query_str = "SELECT URL FROM RESOURCES WHERE ID=" + str(res_id)+ ";"
         res = self.conn.execute(query_str)

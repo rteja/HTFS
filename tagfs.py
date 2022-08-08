@@ -4,6 +4,7 @@ import os
 import sys
 import logging
 import TagHandler
+import QueryEvaluator
 
 _tagfsdb = ".tagfs.db"
 
@@ -84,14 +85,18 @@ def getResourcesByTag(tags) :
     resource_urls = th.getResourcesByTag(tags_closure)
     for res in resource_urls :
         print(fullUrl(res))
+    
+def getResourcesByTagExpr(tagsexpr) :
+    qe = QueryEvaluator.QueryEvaluator(getTagDB())
+    resource_urls = qe.evaluate_query(tagsexpr)
+    for res in resource_urls :
+        print(fullUrl(res))
 
 def linkTags(tag, parent_tag) :
     th = TagHandler.TagHandler(getTagDB())
     res = th.linkTag(tag, parent_tag)
     if not res :
         logobj.error("invalid tags used.")
-    
-
 
 def printUsage():
     print("HTFS: Hierarchially Tagged File System")
@@ -104,7 +109,6 @@ def printUsage():
     print(cmd + " addresource \t track a new resource")
     print(cmd + " tagresource \t add tags to tracked resources")
     print(cmd + " lsresources \t list resources with given tags")
-
 
 def unimplementedFeatureError() :
     logobj.error("unimplemented feature")
@@ -140,7 +144,8 @@ def tagfs(arg) :
     elif arg[0] == "tagresource" :
         tagResource(arg[1], arg[2:])
     elif arg[0] == "lsresources" :
-        getResourcesByTag(arg[1:])
+        #getResourcesByTag(arg[1:])
+        getResourcesByTagExpr(arg[1])
     elif arg[0] == "rmresource" :
         unimplementedFeatureError()
     elif arg[0] == "help" :
