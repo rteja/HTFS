@@ -141,6 +141,10 @@ class TagHandler() :
     def getTagClosure(self, tags) :
         tags_closure = []
         for tag in tags :
+            tagid = self.getTagId(tag)
+            if tagid < 0 :
+                logobj.warning("tag " + tag + " not present in the db")
+                continue
             tags_closure.append(tag)
             downstreamtags = self.getDownstreamTags(tag)
             for dtag in downstreamtags :

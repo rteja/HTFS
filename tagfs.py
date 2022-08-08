@@ -124,6 +124,10 @@ def tagfs(arg) :
     elif arg[0] == "addtags" :
         addTags(arg[1:])
     elif arg[0] == "linktags" :
+        if len(arg) < 3 :
+            logobj.error("improper usage")
+            printUsage()
+            exit(1)
         linkTags(arg[1], arg[2])
     elif arg[0] == "unlinktags" :
         logobj.error("unimplemented feature")
