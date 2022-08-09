@@ -6,7 +6,7 @@ def test():
     testdb = "testdb.db"
     if os.path.exists(testdb) :
         os.remove(testdb)
-    th = TagHandler.TagHandler('testdb.db')
+    th = TagHandler('testdb.db')
     th.add_tag("eresources")
     th.add_tag("books")
     th.add_tag("articles")
@@ -45,3 +45,7 @@ def test():
     th.add_resource_tags(res_path, ["books", "calculus"])
     tags = th.get_resource_tags(res_path)
     print(tags)
+
+
+if __name__ == '__main__':
+    test()

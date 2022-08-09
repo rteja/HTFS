@@ -152,14 +152,14 @@ class TagHandler() :
         tags_closure = list(set(tags_closure))
         return tags_closure
 
-    def add_resource(self, resourceurl) :
+    def add_resource(self, resource_url) :
         res = self.conn.execute("SELECT max(ID) FROM RESOURCES;")
         r = res.fetchone()
         max_res_id = 0
         if r != None :
             max_res_id = r[0]
         new_res_id = max_res_id + 1
-        query_str = "INSERT INTO RESOURCES VALUES (" + str(new_res_id) +  ",\"" + resourceurl + "\")"        
+        query_str = "INSERT INTO RESOURCES VALUES (" + str(new_res_id) +  ",\"" + resource_url + "\")"        
         self.conn.execute(query_str)
         self.conn.commit()
         return new_res_id
@@ -180,8 +180,8 @@ class TagHandler() :
             url = r[0]
         return url
 
-    def get_resource_id(self, resourceurl) :
-        query_str = "SELECT ID FROM RESOURCES WHERE URL=\"" + resourceurl + "\";"
+    def get_resource_id(self, resource_url) :
+        query_str = "SELECT ID FROM RESOURCES WHERE URL=\"" + resource_url + "\";"
         res = self.conn.execute(query_str)
         r = res.fetchone()
         res_id = -1
@@ -196,6 +196,11 @@ class TagHandler() :
         for r in res :            
             tag_ids.append(r[0])
         return tag_ids 
+    
+    def get_resource_tags(self , resource_url) -> list :
+        res_id = self.get_resource_id(resource_url)
+        tag_ids = self.get_resource_tags_by_id(res_id)
+        return tag_ids
 
     def add_resource_tag_by_id(self, resource_id, tag_id) :
         current_tags = self.get_resource_tags_by_id(resource_id)
@@ -210,15 +215,19 @@ class TagHandler() :
             query_str = "DELETE FROM RESOURCELINKS WHERE RESID=" + str(resource_id) + " AND TAGID=" + str(tag_id) + ";"
             self.conn.execute(query_str)
             self.conn.commit()
-    
-    def del_resource_tags(self, resourceurl, tags) :
-        res_id = self.get_resource_id(resourceurl)
+
+    def del_resource_tags(self, resource_url, tags) :
+        res_id = self.get_resource_id(resource_url)
+        if res_id < 0 :
+            logobj.error("resource not tracked")
         tag_ids = list(map(self.get_tag_id, tags))
         for tid in tag_ids :
             self.del_resource_tag_by_id(res_id, tid)
         
-    def add_resource_tags(self, resourceurl, tags) :
-        res_id = self.get_resource_id(resourceurl)
+    def add_resource_tags(self, resource_url, tags) :
+        res_id = self.get_resource_id(resource_url)
+        if res_id < 0 :
+            logobj.error("resource not tracked")
         unsuccessful_tags = []
         for tag in tags :
             tag_id = self.get_tag_id(tag)
@@ -228,8 +237,10 @@ class TagHandler() :
                 unsuccessful_tags.append(tag)
         return unsuccessful_tags
 
-    def get_resource_tags(self, resourceurl) :
-        res_id = self.get_resource_id(resourceurl)
+    def get_resource_tags(self, resource_url) :
+        res_id = self.get_resource_id(resource_url)
+        if res_id < 0 :
+            logobj.error("resource not tracked")
         tag_ids = self.get_resource_tags_by_id(res_id)
         return list(map(self.get_tag_name, tag_ids))
 
@@ -248,53 +259,3 @@ class TagHandler() :
         res_ids = self.get_resources_by_tag_id(tag_ids)
         res = list(map(self.get_resource_url, res_ids))
         return res
-
-
-def test():
-    print("Initializing db..")
-    testdb = "testdb.db"
-    if os.path.exists(testdb) :
-        os.remove(testdb)
-    th = TagHandler('testdb.db')
-    th.add_tag("eresources")
-    th.add_tag("books")
-    th.add_tag("articles")
-    th.add_tag("researchpaper")
-    th.link_tag("books", "eresources")
-    th.link_tag("articles", "eresources")
-    th.link_tag("researchpaper", "articles")
-
-    th.add_tag("topics")
-    th.add_tag("mathematics")
-    th.add_tag("appliedmathematics")
-    th.add_tag("calculus")
-    th.add_tag("physics")
-    th.link_tag("mathematics", "topics")
-    th.link_tag("physics", "topics")
-    th.link_tag("appliedmathematics", "mathematics")
-    th.link_tag("calculus", "mathematics")
-
-    pids = th.get_parent_tags("articles")
-    print(pids)
-    tid = th.get_tag_id("books")
-    print(tid)
-    tname = th.get_tag_name(tid)
-    print(tname)
-    cids = th.get_child_tags("eresources")
-    print(cids)
-    dids = th.get_downstream_tags("eresources")
-    print(dids)
-    dids = th.get_downstream_tags("topics")
-    print(dids)
-
-    res_path = "/this/is/dummy/path"
-    th.addResource(res_path)
-    rid = th.get_resource_id(res_path)
-    print(rid)
-    th.add_resource_tags(res_path, ["books", "calculus"])
-    tags = th.get_resource_tags(res_path)
-    print(tags)
-
-
-if __name__ == '__main__':
-    test()
