@@ -99,6 +99,13 @@ def link_tags(tag, parent_tag) :
     if not res :
         logobj.error("invalid tags used.")
 
+def get_resource_tags(resource_url) :
+    resource_url = normalize_url(resource_url)
+    th = TagHandler.TagHandler(get_tags_db())
+    tags = th.get_resource_tags(resource_url)
+    for tag in tags :
+        print(tag)
+
 def print_usage():
     print("HTFS: Hierarchially Tagged File System")
     cmd = "\t" + os.path.basename(sys.argv[0])
@@ -110,6 +117,7 @@ def print_usage():
     print(cmd + " addresource \t track a new resource")
     print(cmd + " tagresource \t add tags to tracked resources")
     print(cmd + " lsresources \t list resources with given tags")
+    print(cmd + " getresourcetags \t list all the tags of the resource")
 
 def unimplemented_feature_error() :
     logobj.error("unimplemented feature")
@@ -144,12 +152,20 @@ def tagfs(arg) :
     elif arg[0] == "addresource" :
         add_resource(arg[1])
     elif arg[0] == "tagresource" :
+        if len(arg) < 3 :
+            improper_usage()
         tag_resource(arg[1], arg[2:])
+    elif arg[0] == "updateresourceurl" :
+        unimplemented_feature_error()
     elif arg[0] == "lsresources" :
         #get_resources_by_tag(arg[1:])
+        if len(arg) < 2 :
+            improper_usage()
         get_resources_by_tag_expr(arg[1])
     elif arg[0] == "getresourcetags" :
-        unimplemented_feature_error()
+        if len(arg) < 2 :
+            improper_usage()
+        get_resource_tags(arg[1])
     elif arg[0] == "rmresource" :
         unimplemented_feature_error()
     elif arg[0] == "help" :
