@@ -168,6 +168,9 @@ def tagfs(arg) :
         get_resource_tags(arg[1])
     elif arg[0] == "rmresource" :
         unimplemented_feature_error()
+    elif arg[0] == "sanitize" :
+        #remove resources not present on filesystems
+        unimplemented_feature_error()
     elif arg[0] == "help" :
         print_usage()
     else :
