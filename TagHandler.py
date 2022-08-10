@@ -208,6 +208,13 @@ class TagHandler() :
             query_str = "INSERT INTO RESOURCELINKS VALUES (" + str(resource_id) + "," + str(tag_id) + ");"
             self.conn.execute(query_str)
             self.conn.commit()
+        else :
+            logobj.warning("resource already has the tag")
+        
+    def del_resource_tags(self, resource_id) :
+        query_str = "DELETE FROM RESOURCELINKS WHERE RESID=" + str(resource_id) + ";"
+        self.conn.execute(query_str)
+        self.conn.commit()
         
     def del_resource_tag_by_id(self, resource_id, tag_id) :
         current_tags = self.get_resource_tags_by_id(resource_id)
@@ -259,3 +266,13 @@ class TagHandler() :
         res_ids = self.get_resources_by_tag_id(tag_ids)
         res = list(map(self.get_resource_url, res_ids))
         return res
+
+    def del_resource(self, resource_url) :
+        res_id = self.get_resource_id(resource_url)
+        if res_id < 0 :
+            logobj.warning("resource not tracked")
+            return
+        self.del_resource_tags(res_id)
+        query_str = "DELETE FROM RESOURCES WHERE ID=" + str(res_id) + ";"
+        self.conn.execute(query_str)
+        self.conn.commit()
