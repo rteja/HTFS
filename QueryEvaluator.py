@@ -1,6 +1,7 @@
 import TagHandler
 import re
 
+# Implementation of shuning yard algorithm
 class QueryEvaluator :
     def __init__(self, tagsdbfile) :
         self.tagsdb = tagsdbfile

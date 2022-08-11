@@ -2,6 +2,7 @@ import os
 import sqlite3
 import logging
 
+
 logobj = logging.getLogger(__name__)
 class TagHandler() :
     def __init__(self, tagdb_file):
@@ -179,6 +180,15 @@ class TagHandler() :
         if r != None :
             url = r[0]
         return url
+
+    def update_resource_url(self, resource_url, new_resource_url) :
+        res_id = self.get_resource_id(resource_url)
+        if res_id < 0 :
+            logobj.error("resource not tracked")
+        query_str = "UPDATE RESOURCES SET URL=\"" + str(new_resource_url) + "\"" + " WHERE ID=" + str(res_id) + ";"
+        self.conn.execute(query_str)
+        self.conn.commit()
+
 
     def get_resource_id(self, resource_url) :
         query_str = "SELECT ID FROM RESOURCES WHERE URL=\"" + resource_url + "\";"

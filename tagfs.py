@@ -2,6 +2,7 @@
 
 import os
 import sys
+import shutil
 import logging
 import TagHandler
 import QueryEvaluator
@@ -73,6 +74,10 @@ def add_resource(resource_url) :
         rid = th.add_resource(resource_url)
     return rid
 
+def del_resource(resource_url) :
+    th = TagHandler.TagHandler(get_tags_db())
+    th.del_resource(resource_url)
+
 def tag_resource(resource_url, tags) :
     resource_url = normalize_url(resource_url)
     th = TagHandler.TagHandler(get_tags_db())
@@ -80,6 +85,19 @@ def tag_resource(resource_url, tags) :
     if len(unsuccessful_tags) > 0 :
         logobj.warning("following tags not in db " + str(unsuccessful_tags))
 
+def move_resource(resource_url, target_url) :
+    # validate if target_url falls under the same tagfs hierarchy
+    src_is_file = os.path.isfile(resource_url)
+    target_is_dir = os.path.isdir(target_url)
+    if target_is_dir & src_is_file :
+        target_url = target_url + os.sep + os.path.basename(resource_url)
+    shutil.move(resource_url, target_url)
+    resource_url = normalize_url(resource_url)
+    target_url = normalize_url(target_url)
+    th = TagHandler.TagHandler(get_tags_db())
+    th.update_resource_url(resource_url, target_url)
+
+    
 def get_resources_by_tag(tags) :
     th = TagHandler.TagHandler(get_tags_db())
     tags_closure = th.get_tag_closure(tags)
@@ -118,6 +136,8 @@ def print_usage():
     print(cmd + " tagresource \t add tags to tracked resources")
     print(cmd + " lsresources \t list resources with given tags")
     print(cmd + " getresourcetags \t list all the tags of the resource")
+    print(cmd + " rmresource \t untrack the resource in the db")
+    print(cmd + " mvresource \t move resource to a new path")
 
 def unimplemented_feature_error() :
     logobj.error("unimplemented feature")
@@ -169,7 +189,13 @@ def tagfs(arg) :
     elif arg[0] == "rmresourcetags" :
         unimplemented_feature_error()
     elif arg[0] == "rmresource" :
-        unimplemented_feature_error()
+        if len(arg) < 2:
+            improper_usage()
+        del_resource(arg[1])
+    elif arg[0] == "mvresource" :
+        if len(arg) < 2 :
+            improper_usage()
+        move_resource(arg[1], arg[2])
     elif arg[0] == "sanitize" :
         #remove resources not present on filesystems
         unimplemented_feature_error()
