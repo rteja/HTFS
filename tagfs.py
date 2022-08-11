@@ -166,6 +166,8 @@ def tagfs(arg) :
         if len(arg) < 2 :
             improper_usage()
         get_resource_tags(arg[1])
+    elif arg[0] == "rmresourcetags" :
+        unimplemented_feature_error()
     elif arg[0] == "rmresource" :
         unimplemented_feature_error()
     elif arg[0] == "sanitize" :
