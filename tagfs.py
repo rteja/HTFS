@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
 
-
 import os
 import sys
 import shutil
 import logging
+
 import TagHandler
-import QueryEvaluator
 from TagfsUtilities import TagfsTagHandlerUtilities, get_tag_fs_boundary
 
 _tagfsdb = ".tagfs.db"
@@ -14,30 +13,34 @@ _tagfsdb = ".tagfs.db"
 logging.basicConfig(level='INFO')
 logobj = logging.getLogger(__name__)
 
+def get_tag_fs_utils() :
+    th_utils = TagfsTagHandlerUtilities(get_tag_fs_boundary())
+    return th_utils
+
 def _init_tag_fs():
     TagHandler.TagHandler(_tagfsdb)
     logobj.info("initialized in " + os.path.realpath(os.curdir))
 
 def _get_tags_list(tags) :
-    th_utils = TagfsTagHandlerUtilities(get_tag_fs_boundary())
+    th_utils = get_tag_fs_utils()
     tags_list = th_utils.get_tags_list(tags)
     for tag in tags_list :
         print(tag)
 
 def _add_tags(tags) :
-    th_utils = TagfsTagHandlerUtilities(get_tag_fs_boundary())
+    th_utils = get_tag_fs_utils()
     th_utils.add_tags(tags)
             
 def _add_resource(resource_url) :
-    th_utils = TagfsTagHandlerUtilities(get_tag_fs_boundary())
+    th_utils = get_tag_fs_boundary()
     th_utils.add_resource(resource_url)
 
 def _del_resource(resource_url) :
-    th_utils = TagfsTagHandlerUtilities(get_tag_fs_boundary())
+    th_utils = get_tag_fs_utils()
     th_utils.del_resource(resource_url)
 
 def _tag_resource(resource_url, tags) :
-    th_utils = TagfsTagHandlerUtilities(get_tag_fs_boundary())
+    th_utils = get_tag_fs_utils()
     unsuccessful_tags = th_utils.tag_resource(resource_url, tags)
     if len(unsuccessful_tags) > 0 :
         logobj.warning("following tags not in db " + str(unsuccessful_tags))
@@ -49,7 +52,7 @@ def _move_resource(resource_url, target_url) :
     if target_is_dir & src_is_file :
         target_url = target_url + os.sep + os.path.basename(resource_url)
     shutil.move(resource_url, target_url)
-    th_utils = TagfsTagHandlerUtilities(get_tag_fs_boundary())
+    th_utils = get_tag_fs_utils()
     th_utils.move_resource(resource_url, target_url)
 
 def full_url(normzlied_resource_url) :
@@ -57,26 +60,26 @@ def full_url(normzlied_resource_url) :
     return url
 
 def _get_resources_by_tag(tags) :
-    th_utils = TagfsTagHandlerUtilities(get_tag_fs_boundary())
+    th_utils = get_tag_fs_utils()
     resource_urls = th_utils.get_resources_by_tag(tags)
     for res in resource_urls :
         print(full_url(res))
     
 def _get_resources_by_tag_expr(tagsexpr) :
-    th_utils = TagfsTagHandlerUtilities(get_tag_fs_boundary())
+    th_utils = get_tag_fs_utils()
     resource_urls = th_utils.get_resources_by_tag_expr(tagsexpr)
     for res in resource_urls :
         print(full_url(res))
 
 def _link_tags(tag, parent_tag) :
-    th_utils = TagfsTagHandlerUtilities(get_tag_fs_boundary())
+    th_utils = get_tag_fs_utils()
     res = th_utils.link_tags(tag, parent_tag)
     if not res :
         logobj.error("invalid tags used.")
 
 def _get_resource_tags(resource_url) :
-    th_utils = TagfsTagHandlerUtilities(get_tag_fs_boundary())
-    tags = th_utils._get_resource_tags(resource_url)
+    th_utils = get_tag_fs_utils()
+    tags = th_utils.get_resource_tags(resource_url)
     for tag in tags :
         print(tag)
 
