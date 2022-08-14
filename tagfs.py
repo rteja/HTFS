@@ -68,7 +68,7 @@ def _tag_resource(args) :
     if len(args) < 2 :
         improper_usage()
     resource_url = args[0]
-    tags = args[1]
+    tags = args[1:]
     th_utils = get_tagfs_utils()
     unsuccessful_tags = th_utils.tag_resource(resource_url, tags)
     if len(unsuccessful_tags) > 0 :
