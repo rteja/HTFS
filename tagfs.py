@@ -8,8 +8,6 @@ import logging
 import TagHandler
 import TagfsUtilities
 
-_tagfsdb = ".tagfs.db"
-
 logging.basicConfig(level='INFO')
 logobj = logging.getLogger(__name__)
 
@@ -26,9 +24,9 @@ def _get_tag_fs_boundary() :
     exit(0)
     
 def _init_tag_fs() :
-    TagHandler.TagHandler(_tagfsdb)
+    TagHandler.TagHandler(TagfsUtilities._tagfsdb)
     logobj.info("initialized in " + os.path.realpath(os.curdir))
-    if not os.path.exists(_tagfsdb) :
+    if not os.path.exists(TagfsUtilities._tagfsdb) :
         exit(0)
     exit(0)
 
