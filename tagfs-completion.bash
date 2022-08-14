@@ -1,12 +1,5 @@
 #!/usr/bin/env bash
 
-
-_get_filelist()
-{
-  COMPREPLY=($(compgen -W "$(ls)" "${COMP_WORDS[$1]}"))
-}
-
-
 _tagfs_completions()
 {
   if [ "${#COMP_WORDS[@]}" == "2" ]; then
