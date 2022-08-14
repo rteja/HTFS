@@ -118,7 +118,7 @@ def _link_tags(args) :
     exit(0)
 
 def _get_resource_tags(args) :
-    if len(args) < 1:
+    if len(args) != 1 :
         improper_usage()
     resource_url = args[0]
     th_utils = get_tag_fs_utils()

@@ -10,7 +10,7 @@ _get_filelist()
 _tagfs_completions()
 {
   if [ "${#COMP_WORDS[@]}" == "2" ]; then
-    COMPREPLY=($(compgen -W "init lstags addtags linktags addresource tagresource lsresources rmresource mvresource help" "${COMP_WORDS[1]}"))
+    COMPREPLY=($(compgen -W "init lstags addtags linktags addresource tagresource lsresources rmresource mvresource getresourcetags help" "${COMP_WORDS[1]}"))
   fi
 
   if [ "${#COMP_WORDS[@]}" == "3" ]; then
@@ -28,6 +28,10 @@ _tagfs_completions()
     fi
     
     if [ "${COMP_WORDS[1]}" == "rmresource" ]; then
+      COMPREPLY=($(compgen -W "$(ls)" "${COMP_WORDS[2]}"))
+    fi
+
+    if [ "${COMP_WORDS[1]}" == "getresourcetags" ]; then
       COMPREPLY=($(compgen -W "$(ls)" "${COMP_WORDS[2]}"))
     fi
 
