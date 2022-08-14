@@ -17,7 +17,7 @@ def get_tag_fs_utils() :
     th_utils = TagfsTagHandlerUtilities(get_tag_fs_boundary())
     return th_utils
 
-def _init_tag_fs():
+def _init_tag_fs() :
     TagHandler.TagHandler(_tagfsdb)
     logobj.info("initialized in " + os.path.realpath(os.curdir))
 
@@ -62,14 +62,14 @@ def full_url(normzlied_resource_url) :
 def _get_resources_by_tag(tags) :
     th_utils = get_tag_fs_utils()
     resource_urls = th_utils.get_resources_by_tag(tags)
-    for res in resource_urls :
-        print(full_url(res))
+    for res_url in resource_urls :
+        print(res_url)
     
 def _get_resources_by_tag_expr(tagsexpr) :
     th_utils = get_tag_fs_utils()
     resource_urls = th_utils.get_resources_by_tag_expr(tagsexpr)
-    for res in resource_urls :
-        print(full_url(res))
+    for res_url in resource_urls :
+        print(res_url)
 
 def _link_tags(tag, parent_tag) :
     th_utils = get_tag_fs_utils()
