@@ -18,35 +18,61 @@ def get_tag_fs_utils() :
     th_utils = TagfsUtilities.TagfsTagHandlerUtilities(tagfs_boundary)
     return th_utils
 
+def _get_tag_fs_boundary() :
+    tagfs_boundary = TagfsUtilities.get_tag_fs_boundary()
+    if tagfs_boundary == None :
+        improper_usage()
+    print(tagfs_boundary)
+    exit(0)
+    
 def _init_tag_fs() :
     TagHandler.TagHandler(_tagfsdb)
     logobj.info("initialized in " + os.path.realpath(os.curdir))
+    if not os.path.exists(_tagfsdb) :
+        exit(0)
+    exit(0)
 
 def _get_tags_list(tags) :
     th_utils = get_tag_fs_utils()
     tags_list = th_utils.get_tags_list(tags)
     for tag in tags_list :
         print(tag)
+    exit(0)
 
 def _add_tags(tags) :
     th_utils = get_tag_fs_utils()
     th_utils.add_tags(tags)
+    exit(0)
             
 def _add_resource(resource_url) :
     th_utils = get_tag_fs_utils()
     th_utils.add_resource(resource_url)
+    exit(0)
 
-def _del_resource(resource_url) :
+def _del_resource(args) :
+    if len(args) < 1 :
+        improper_usage()
+    resource_url = args[0]
     th_utils = get_tag_fs_utils()
     th_utils.del_resource(resource_url)
+    exit(0)
 
-def _tag_resource(resource_url, tags) :
+def _tag_resource(args) :
+    if len(args) < 2 :
+        improper_usage()
+    resource_url = args[0]
+    tags = args[1]
     th_utils = get_tag_fs_utils()
     unsuccessful_tags = th_utils.tag_resource(resource_url, tags)
     if len(unsuccessful_tags) > 0 :
         logobj.warning("following tags not in db " + str(unsuccessful_tags))
+    exit(0)
 
-def _move_resource(resource_url, target_url) :
+def _move_resource(args) :
+    if len(args) < 2 :
+        improper_usage()
+    resource_url = args[0]
+    target_url = args[1]
     # validate if target_url falls under the same tagfs hierarchy
     src_is_file = os.path.isfile(resource_url)
     target_is_dir = os.path.isdir(target_url)
@@ -55,30 +81,46 @@ def _move_resource(resource_url, target_url) :
     shutil.move(resource_url, target_url)
     th_utils = get_tag_fs_utils()
     th_utils.move_resource(resource_url, target_url)
+    exit(0)
 
 def _get_resources_by_tag(tags) :
     th_utils = get_tag_fs_utils()
     resource_urls = th_utils.get_resources_by_tag(tags)
     for res_url in resource_urls :
         print(res_url)
+    exit(0)
     
-def _get_resources_by_tag_expr(tagsexpr) :
+def _get_resources_by_tag_expr(args) :
+    if len(args) < 1 :
+        improper_usage()
+    tagsexpr = args[0]
     th_utils = get_tag_fs_utils()
     resource_urls = th_utils.get_resources_by_tag_expr(tagsexpr)
     for res_url in resource_urls :
         print(res_url)
+    exit(0)
 
-def _link_tags(tag, parent_tag) :
+def _link_tags(args) :
+    if len(args) < 2 :
+        improper_usage()
+    tag = args[0]
+    parent_tag = args[1]
     th_utils = get_tag_fs_utils()
     res = th_utils.link_tags(tag, parent_tag)
     if not res :
         logobj.error("invalid tags used.")
+        exit(1)
+    exit(0)
 
-def _get_resource_tags(resource_url) :
+def _get_resource_tags(args) :
+    if len(args) < 1:
+        improper_usage()
+    resource_url = args[0]
     th_utils = get_tag_fs_utils()
     tags = th_utils.get_resource_tags(resource_url)
     for tag in tags :
         print(tag)
+    exit(0)
 
 def print_usage():
     print("HTFS: Hierarchially Tagged File System")
@@ -111,47 +153,32 @@ def tagfs(arg) :
     if arg[0] == "init" :
         _init_tag_fs()
     elif arg[0] == "getboundary" :
-        bdr = get_tag_fs_boundary()
-        if bdr == None :
-            improper_usage()
-        print(bdr)
+        _get_tag_fs_boundary()
     elif arg[0] == "lstags" :
         _get_tags_list(arg[1:])
     elif arg[0] == "addtags" :
         _add_tags(arg[1:])
     elif arg[0] == "linktags" :
-        if len(arg) < 3 :
-            improper_usage()
-        _link_tags(arg[1], arg[2])
+        _link_tags(arg[1:])
     elif arg[0] == "unlinktags" :
         unimplemented_feature_error()
     elif arg[0] == "addresource" :
         _add_resource(arg[1])
     elif arg[0] == "tagresource" :
-        if len(arg) < 3 :
-            improper_usage()
-        _tag_resource(arg[1], arg[2:])
+        _tag_resource(arg[1:])
     elif arg[0] == "updateresourceurl" :
         unimplemented_feature_error()
     elif arg[0] == "lsresources" :
         #get_resources_by_tag(arg[1:])
-        if len(arg) < 2 :
-            improper_usage()
         _get_resources_by_tag_expr(arg[1])
     elif arg[0] == "getresourcetags" :
-        if len(arg) < 2 :
-            improper_usage()
         _get_resource_tags(arg[1])
     elif arg[0] == "rmresourcetags" :
         unimplemented_feature_error()
     elif arg[0] == "rmresource" :
-        if len(arg) < 2:
-            improper_usage()
         _del_resource(arg[1])
     elif arg[0] == "mvresource" :
-        if len(arg) < 2 :
-            improper_usage()
-        _move_resource(arg[1], arg[2])
+        _move_resource(arg[1:])
     elif arg[0] == "sanitize" :
         #remove resources not present on filesystems
         unimplemented_feature_error()
@@ -159,7 +186,6 @@ def tagfs(arg) :
         print_usage()
     else :
         improper_usage()
-    exit(0)
 
 if __name__ == "__main__" :
     tagfs(sys.argv[1:])
