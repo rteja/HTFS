@@ -1,4 +1,3 @@
-
 import os
 import logging
 
@@ -29,6 +28,10 @@ def get_tag_fs_boundary() :
                 return None
         tag_fs_db_file_path = os.path.pardir + "/" + tag_fs_db_file_path
         tag_fs_db_file = tag_fs_db_file_path + _tagfsdb
+
+def full_url(normzlied_resource_url) :
+    url = os.path.join(get_tag_fs_boundary(), normzlied_resource_url)
+    return url
 
 def get_relative_path(url, base_path) :
     return os.path.relpath(url, base_path)
@@ -90,11 +93,13 @@ class TagfsTagHandlerUtilities :
     def get_resources_by_tag(self, tags) :
         tags_closure = self.th.get_tag_closure(tags)
         resource_urls = self.th.get_resources_by_tag(tags_closure)
+        resource_urls = list(map(full_url, resource_urls))
         return resource_urls
         
     def get_resources_by_tag_expr(self, tagsexpr) :
         qe = QueryEvaluator.QueryEvaluator(self.th)
         resource_urls = qe.evaluate_query(tagsexpr)
+        resource_urls = list(map(full_url, resource_urls))
         return resource_urls
 
     def link_tags(self, tag, parent_tag) :

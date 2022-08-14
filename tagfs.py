@@ -6,7 +6,7 @@ import shutil
 import logging
 
 import TagHandler
-from TagfsUtilities import TagfsTagHandlerUtilities, get_tag_fs_boundary
+import TagfsUtilities
 
 _tagfsdb = ".tagfs.db"
 
@@ -14,7 +14,8 @@ logging.basicConfig(level='INFO')
 logobj = logging.getLogger(__name__)
 
 def get_tag_fs_utils() :
-    th_utils = TagfsTagHandlerUtilities(get_tag_fs_boundary())
+    tagfs_boundary = TagfsUtilities.get_tag_fs_boundary()
+    th_utils = TagfsUtilities.TagfsTagHandlerUtilities(tagfs_boundary)
     return th_utils
 
 def _init_tag_fs() :
@@ -32,7 +33,7 @@ def _add_tags(tags) :
     th_utils.add_tags(tags)
             
 def _add_resource(resource_url) :
-    th_utils = get_tag_fs_boundary()
+    th_utils = get_tag_fs_utils()
     th_utils.add_resource(resource_url)
 
 def _del_resource(resource_url) :
@@ -54,10 +55,6 @@ def _move_resource(resource_url, target_url) :
     shutil.move(resource_url, target_url)
     th_utils = get_tag_fs_utils()
     th_utils.move_resource(resource_url, target_url)
-
-def full_url(normzlied_resource_url) :
-    url = os.path.join(get_tag_fs_boundary(), normzlied_resource_url)
-    return url
 
 def _get_resources_by_tag(tags) :
     th_utils = get_tag_fs_utils()
