@@ -40,11 +40,16 @@ def _get_tags_list(tags) :
     exit(0)
 
 def _add_tags(tags) :
+    if len(tags) < 1 :
+        improper_usage()
     th_utils = get_tag_fs_utils()
     th_utils.add_tags(tags)
     exit(0)
             
-def _add_resource(resource_url) :
+def _add_resource(args) :
+    if len(args) < 1 :
+        improper_usage()
+    resource_url = args[0]
     th_utils = get_tag_fs_utils()
     th_utils.add_resource(resource_url)
     exit(0)
@@ -163,20 +168,20 @@ def tagfs(arg) :
     elif arg[0] == "unlinktags" :
         unimplemented_feature_error()
     elif arg[0] == "addresource" :
-        _add_resource(arg[1])
+        _add_resource(arg[1:])
     elif arg[0] == "tagresource" :
         _tag_resource(arg[1:])
     elif arg[0] == "updateresourceurl" :
         unimplemented_feature_error()
     elif arg[0] == "lsresources" :
         #get_resources_by_tag(arg[1:])
-        _get_resources_by_tag_expr(arg[1])
+        _get_resources_by_tag_expr(arg[1:])
     elif arg[0] == "getresourcetags" :
-        _get_resource_tags(arg[1])
+        _get_resource_tags(arg[1:])
     elif arg[0] == "rmresourcetags" :
         unimplemented_feature_error()
     elif arg[0] == "rmresource" :
-        _del_resource(arg[1])
+        _del_resource(arg[1:])
     elif arg[0] == "mvresource" :
         _move_resource(arg[1:])
     elif arg[0] == "sanitize" :
