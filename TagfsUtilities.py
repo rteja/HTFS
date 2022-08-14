@@ -70,6 +70,11 @@ class TagfsTagHandlerUtilities :
             rid = self.th.add_resource(resource_url)
         return rid
 
+    def is_resource_tracked(self, resource_url) :
+        resource_url = normalize_url(resource_url)
+        rid = self.th.get_resource_id(resource_url)
+        return (rid > 0)
+
     def del_resource(self, resource_url) :
         self.th.del_resource(resource_url)
 
@@ -77,12 +82,6 @@ class TagfsTagHandlerUtilities :
         resource_url = normalize_url(resource_url)
         unsuccessful_tags = self.th.add_resource_tags(resource_url, tags)
         return unsuccessful_tags
-
-    def is_resource_tracked(self, resource_url) -> bool :
-        resid = self.th.get_resource_id(resource_url)
-        if resid < 0 :
-            return False
-        return True
 
     def move_resource(self, resource_url, target_url) :
         # validate if target_url falls under the same tagfs hierarchy
