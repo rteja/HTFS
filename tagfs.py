@@ -11,8 +11,12 @@ import TagfsUtilities
 logging.basicConfig(level='INFO')
 logobj = logging.getLogger(__name__)
 
-def get_tag_fs_utils() :
+def get_tagfs_utils() :
     tagfs_boundary = TagfsUtilities.get_tag_fs_boundary()
+    if tagfs_boundary == None :
+        logobj.error('db not initialized')
+        print_usage()
+        exit(1)
     th_utils = TagfsUtilities.TagfsTagHandlerUtilities(tagfs_boundary)
     return th_utils
 
@@ -31,7 +35,7 @@ def _init_tag_fs() :
     exit(0)
 
 def _get_tags_list(tags) :
-    th_utils = get_tag_fs_utils()
+    th_utils = get_tagfs_utils()
     tags_list = th_utils.get_tags_list(tags)
     for tag in tags_list :
         print(tag)
@@ -40,7 +44,7 @@ def _get_tags_list(tags) :
 def _add_tags(tags) :
     if len(tags) < 1 :
         improper_usage()
-    th_utils = get_tag_fs_utils()
+    th_utils = get_tagfs_utils()
     th_utils.add_tags(tags)
     exit(0)
             
@@ -48,7 +52,7 @@ def _add_resource(args) :
     if len(args) < 1 :
         improper_usage()
     resource_url = args[0]
-    th_utils = get_tag_fs_utils()
+    th_utils = get_tagfs_utils()
     th_utils.add_resource(resource_url)
     exit(0)
 
@@ -56,7 +60,7 @@ def _del_resource(args) :
     if len(args) < 1 :
         improper_usage()
     resource_url = args[0]
-    th_utils = get_tag_fs_utils()
+    th_utils = get_tagfs_utils()
     th_utils.del_resource(resource_url)
     exit(0)
 
@@ -65,7 +69,7 @@ def _tag_resource(args) :
         improper_usage()
     resource_url = args[0]
     tags = args[1]
-    th_utils = get_tag_fs_utils()
+    th_utils = get_tagfs_utils()
     unsuccessful_tags = th_utils.tag_resource(resource_url, tags)
     if len(unsuccessful_tags) > 0 :
         logobj.warning("following tags not in db " + str(unsuccessful_tags))
@@ -82,12 +86,12 @@ def _move_resource(args) :
     if target_is_dir & src_is_file :
         target_url = target_url + os.sep + os.path.basename(resource_url)
     shutil.move(resource_url, target_url)
-    th_utils = get_tag_fs_utils()
+    th_utils = get_tagfs_utils()
     th_utils.move_resource(resource_url, target_url)
     exit(0)
 
 def _get_resources_by_tag(tags) :
-    th_utils = get_tag_fs_utils()
+    th_utils = get_tagfs_utils()
     resource_urls = th_utils.get_resources_by_tag(tags)
     for res_url in resource_urls :
         print(res_url)
@@ -97,7 +101,7 @@ def _get_resources_by_tag_expr(args) :
     if len(args) < 1 :
         improper_usage()
     tagsexpr = args[0]
-    th_utils = get_tag_fs_utils()
+    th_utils = get_tagfs_utils()
     resource_urls = th_utils.get_resources_by_tag_expr(tagsexpr)
     for res_url in resource_urls :
         print(res_url)
@@ -108,7 +112,7 @@ def _link_tags(args) :
         improper_usage()
     tag = args[0]
     parent_tag = args[1]
-    th_utils = get_tag_fs_utils()
+    th_utils = get_tagfs_utils()
     res = th_utils.link_tags(tag, parent_tag)
     if not res :
         logobj.error("invalid tags used.")
@@ -119,7 +123,7 @@ def _get_resource_tags(args) :
     if len(args) != 1 :
         improper_usage()
     resource_url = args[0]
-    th_utils = get_tag_fs_utils()
+    th_utils = get_tagfs_utils()
     tags = th_utils.get_resource_tags(resource_url)
     for tag in tags :
         print(tag)
