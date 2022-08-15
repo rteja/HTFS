@@ -83,6 +83,10 @@ class TagfsTagHandlerUtilities :
         unsuccessful_tags = self.th.add_resource_tags(resource_url, tags)
         return unsuccessful_tags
 
+    def untag_resource(self, resource_url, tags) :
+        resource_url = normalize_url(resource_url)
+        self.th.del_resource_tags(resource_url, tags)
+
     def move_resource(self, resource_url, target_url) :
         # validate if target_url falls under the same tagfs hierarchy
         resource_url = normalize_url(resource_url)

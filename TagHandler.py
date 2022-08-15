@@ -239,6 +239,8 @@ class TagHandler() :
             logobj.error("resource not tracked")
         tag_ids = list(map(self.get_tag_id, tags))
         for tid in tag_ids :
+            if tid < 0 :
+                logobj.error("tag not id db")
             self.del_resource_tag_by_id(res_id, tid)
         
     def add_resource_tags(self, resource_url, tags) :

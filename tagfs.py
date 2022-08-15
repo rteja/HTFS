@@ -75,6 +75,14 @@ def _tag_resource(args) :
         logobj.warning("following tags not in db " + str(unsuccessful_tags))
     exit(0)
 
+def _untag_resource(args) :
+    if len(args) < 2 :
+        improper_usage()
+    resource_url = args[0]
+    tags = args[1:]
+    th_utils = get_tagfs_utils()
+    th_utils.untag_resource(resource_url, tags)
+
 def _move_resource(args) :
     if len(args) < 2 :
         improper_usage()
@@ -139,6 +147,7 @@ def print_usage():
     print(cmd + " linktags \t\t link existing tags")
     print(cmd + " addresource \t track a new resource")
     print(cmd + " tagresource \t add tags to tracked resources")
+    print(cmd + " untagresource \t remove tags on tracked resources")
     print(cmd + " lsresources \t list resources with given tags")
     print(cmd + " getresourcetags \t list all the tags of the resource")
     print(cmd + " rmresource \t untrack the resource in the db")
@@ -173,6 +182,8 @@ def tagfs(arg) :
         _add_resource(arg[1:])
     elif arg[0] == "tagresource" :
         _tag_resource(arg[1:])
+    elif arg[0] == "untagresource" :
+        _untag_resource(arg[1:])
     elif arg[0] == "updateresourceurl" :
         unimplemented_feature_error()
     elif arg[0] == "lsresources" :

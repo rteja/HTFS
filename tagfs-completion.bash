@@ -3,7 +3,7 @@
 _tagfs_completions()
 {
   if [ "${#COMP_WORDS[@]}" == "2" ]; then
-    COMPREPLY=($(compgen -W "init getboundary lstags addtags linktags addresource tagresource lsresources rmresource mvresource getresourcetags help" "${COMP_WORDS[1]}"))
+    COMPREPLY=($(compgen -W "init getboundary lstags addtags linktags addresource tagresource untagresource lsresources rmresource mvresource getresourcetags help" "${COMP_WORDS[1]}"))
   fi
 
   if [ "${#COMP_WORDS[@]}" == "3" ]; then
@@ -13,6 +13,10 @@ _tagfs_completions()
     fi
 
     if [ "${COMP_WORDS[1]}" == "tagresource" ]; then
+      COMPREPLY=($(compgen -f -- "${COMP_WORDS[2]}"))
+    fi
+
+    if [ "${COMP_WORDS[1]}" == "untagresource" ]; then
       COMPREPLY=($(compgen -f -- "${COMP_WORDS[2]}"))
     fi
 
@@ -43,6 +47,10 @@ _tagfs_completions()
       COMPREPLY=($(compgen -W "$(tagfs lstags)" "${COMP_WORDS[3]}"))
     fi
 
+    if [ "${COMP_WORDS[1]}" == "untagresource" ]; then
+      COMPREPLY=($(compgen -W "$(tagfs lstags)" "${COMP_WORDS[3]}"))
+    fi
+
     if [ "${COMP_WORDS[1]}" == "linktags" ]; then
       COMPREPLY=($(compgen -W "$(tagfs lstags)" "${COMP_WORDS[3]}"))
     fi
@@ -50,6 +58,10 @@ _tagfs_completions()
 
   if [ ${#COMP_WORDS[@]} -gt 4 ]; then
     if [ "${COMP_WORDS[1]}" == "tagresource" ]; then
+      COMPREPLY=($(compgen -W "$(tagfs lstags)" "${COMP_WORDS[${#COMP_WORDS[@]} - 1]}"))
+    fi
+
+    if [ "${COMP_WORDS[1]}" == "untagresource" ]; then
       COMPREPLY=($(compgen -W "$(tagfs lstags)" "${COMP_WORDS[${#COMP_WORDS[@]} - 1]}"))
     fi
   fi
