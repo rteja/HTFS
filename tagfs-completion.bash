@@ -41,7 +41,6 @@ _tagfs_completions()
   if [ "${#COMP_WORDS[@]}" == "4" ]; then
     if [ "${COMP_WORDS[1]}" == "tagresource" ]; then
       COMPREPLY=($(compgen -W "$(tagfs lstags)" "${COMP_WORDS[3]}"))
-      echo hello
     fi
 
     if [ "${COMP_WORDS[1]}" == "linktags" ]; then
@@ -51,7 +50,7 @@ _tagfs_completions()
 
   if [ ${#COMP_WORDS[@]} -gt 4 ]; then
     if [ "${COMP_WORDS[1]}" == "tagresource" ]; then
-      COMPREPLY=($(compgen -W "$(tagfs lstags)" "${COMP_WORDS[3]}"))
+      COMPREPLY=($(compgen -W "$(tagfs lstags)" "${COMP_WORDS[${#COMP_WORDS[@]} - 1]}"))
     fi
   fi
 }
