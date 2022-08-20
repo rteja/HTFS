@@ -1,6 +1,7 @@
 import os
 import sqlite3
 import logging
+import pypika
 
 
 logobj = logging.getLogger(__name__)
@@ -14,29 +15,37 @@ class TagHandler() :
     def __del__(self):
         self.conn.close()
 
-    def init(self) :
-        self.conn = sqlite3.connect(self.tagdb)
-        self.conn.execute('''CREATE TABLE TAGS
+    def __init_tags_table(self, dbconn) :
+        dbconn.execute('''CREATE TABLE TAGS
                         (ID INT PRIMARY KEY NOT NULL,
                         TAGNAME TEXT NOT NULL);''')
-        self.conn.execute('''INSERT INTO TAGS
+        dbconn.execute('''INSERT INTO TAGS
                         VALUES (0, 'dummy');''')
-        self.conn.execute('''CREATE TABLE TAGLINKS
+        dbconn.execute('''CREATE TABLE TAGLINKS
                         (TAGID INT NOT NULL,
                         TAGPARENTID INT NOT NULL);''')
-        self.conn.execute('''INSERT INTO TAGLINKS
+        dbconn.execute('''INSERT INTO TAGLINKS
                         VALUES (0, 0);''')
-        self.conn.execute('''CREATE TABLE RESOURCES
+        dbconn.commit()
+    
+    def __init_resources_table(self, dbconn) :
+        dbconn.execute('''CREATE TABLE RESOURCES
                         (ID INT PRIMARY KEY NOT NULL,
                         URL TEXT NOT NULL);''')
-        self.conn.execute('''INSERT INTO RESOURCES
+        dbconn.execute('''INSERT INTO RESOURCES
                         VALUES (0,"dummy");''')
-        self.conn.execute('''CREATE TABLE RESOURCELINKS
+        dbconn.execute('''CREATE TABLE RESOURCELINKS
                         (RESID INT NOT NULL, 
                         TAGID INT NOT NULL)''')
-        self.conn.execute('''INSERT INTO RESOURCELINKS
+        dbconn.execute('''INSERT INTO RESOURCELINKS
                         VALUES (0,0);''')
-        self.conn.commit()
+        dbconn.commit()
+
+    def init(self) :
+        dbconn = sqlite3.connect(self.tagdb)
+        self.__init_tags_table(dbconn)
+        self.__init_resources_table(dbconn)
+        dbconn.close()
 
     # can also be used to check if tag is valid
     def get_tag_id(self, tag_name) -> int:
