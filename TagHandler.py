@@ -254,7 +254,7 @@ class TagHandler() :
         else :
             logobj.warning("resource already has the tag")
         
-    def del_resource_tags(self, resource_id) :
+    def del_all_resource_tags(self, resource_id) :
         query_str = "DELETE FROM RESOURCELINKS WHERE RESID=" + str(resource_id) + ";"
         self.conn.execute(query_str)
         self.conn.commit()
@@ -317,7 +317,7 @@ class TagHandler() :
         if res_id < 0 :
             logobj.warning("resource not tracked")
             return
-        self.del_resource_tags(res_id)
+        self.del_all_resource_tags(res_id)
         query_str = "DELETE FROM RESOURCES WHERE ID=" + str(res_id) + ";"
         self.conn.execute(query_str)
         self.conn.commit()
