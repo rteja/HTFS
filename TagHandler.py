@@ -1,8 +1,6 @@
 import os
 import sqlite3
 import logging
-import pypika
-
 
 logobj = logging.getLogger(__name__)
 class TagHandler() :
