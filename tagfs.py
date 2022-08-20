@@ -47,6 +47,18 @@ def _add_tags(tags) :
     th_utils = get_tagfs_utils()
     th_utils.add_tags(tags)
     exit(0)
+
+def _rename_tag(args) :
+    if len(args) < 2 :
+        improper_usage()
+    old_tag_name = args[0]
+    new_tag_name = args[1]
+    th_utils = get_tagfs_utils()
+    res = th_utils.rename_tag(old_tag_name, new_tag_name)
+    if not res :
+        logobj.error("could not rename tags, check if tags are present in db")
+        exit(1)
+    exit(0)
             
 def _add_resource(args) :
     if len(args) < 1 :
@@ -144,6 +156,7 @@ def print_usage():
     print(cmd + " getboundary \t fs boundary starting which tags are tracked")
     print(cmd + " lstags \t\t list tags")
     print(cmd + " addtags \t\t add new tags")
+    print(cmd + " renametag \t rename an existing tag")
     print(cmd + " linktags \t\t link existing tags")
     print(cmd + " addresource \t track a new resource")
     print(cmd + " tagresource \t add tags to tracked resources")
@@ -174,6 +187,8 @@ def tagfs(arg) :
         _get_tags_list(arg[1:])
     elif arg[0] == "addtags" :
         _add_tags(arg[1:])
+    elif arg[0] == "renametag" :
+        _rename_tag(arg[1:])
     elif arg[0] == "linktags" :
         _link_tags(arg[1:])
     elif arg[0] == "unlinktags" :

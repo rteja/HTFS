@@ -68,7 +68,7 @@ class TagHandler() :
     def add_tag(self, tag_name) -> int :
         tag_exists = self.get_tag_id(tag_name)
         if tag_exists > 0 :
-            return tag_exists
+            return False
         res = self.conn.execute("SELECT max(ID) FROM TAGS;")
         r = res.fetchone()
         max_tag_id = r[0]
@@ -76,7 +76,19 @@ class TagHandler() :
         query_str = "INSERT INTO TAGS VALUES (" + str(new_tag_id) + ",'" + tag_name + "');"
         self.conn.execute(query_str)
         self.conn.commit()
-        return new_tag_id
+        return True
+
+    def rename_tag(self, tag_name, new_tag_name) :
+        tag_exists = self.get_tag_id(new_tag_name)
+        if tag_exists > 0 :
+            return False
+        tag_exists = self.get_tag_id(tag_name)
+        if tag_exists < 0 :
+            return False
+        query_str = "UPDATE TAGS SET TAGNAME='" + new_tag_name + "' WHERE ID=" + str(tag_exists) + ";"
+        self.conn.execute(query_str)
+        self.conn.commit()
+        return True
 
     def link_tag(self, tag_name, tag_parent_name) :
         src_tag_id = self.get_tag_id(tag_name)
@@ -86,6 +98,18 @@ class TagHandler() :
                 logobj.error("tags not in db")
             return False
         query_str = "INSERT INTO TAGLINKS VALUES (" + str(src_tag_id) + "," + str(parent_tag_id) + ");"
+        self.conn.execute(query_str)
+        self.conn.commit()
+        return True
+
+    def unlink_tag(self, tag_name, tag_parent_name) :
+        src_tag_id = self.get_tag_id(tag_name)
+        parent_tag_id = self.get_tag_id(tag_parent_name)
+        if (src_tag_id < 0 or parent_tag_id < 0) :
+            if src_tag_id < 0 :
+                logobj.error("tags not in db")
+            return False
+        query_str = "DELETE FROM TAGLINKS WHERE TAGID=" + str(src_tag_id) + " AND TAGPARENTID=" + str(parent_tag_id) + ";"
         self.conn.execute(query_str)
         self.conn.commit()
         return True

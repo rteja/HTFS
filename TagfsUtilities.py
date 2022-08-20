@@ -63,6 +63,10 @@ class TagfsTagHandlerUtilities :
         for tag in tags :
             self.th.add_tag(tag)
 
+    def rename_tag(self, tag_name, new_tag_name) :
+        res = self.th.rename_tag(tag_name, new_tag_name)
+        return res
+
     def add_resource(self, resource_url) :
         resource_url = normalize_url(resource_url)
         rid = self.th.get_resource_id(resource_url)
