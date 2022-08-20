@@ -236,7 +236,7 @@ class TagHandler() :
         query_str = "SELECT TAGID FROM RESOURCELINKS WHERE RESID=" + str(resource_id) + ";"
         res = self.conn.execute(query_str)
         tag_ids = []
-        for r in res :            
+        for r in res :
             tag_ids.append(r[0])
         return tag_ids 
     
