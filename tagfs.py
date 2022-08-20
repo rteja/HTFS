@@ -144,6 +144,10 @@ def _get_resource_tags(args) :
         improper_usage()
     resource_url = args[0]
     th_utils = get_tagfs_utils()
+    is_resource_tracked = th_utils.is_resource_tracked(resource_url)
+    if not is_resource_tracked :
+        logobj.error("resource not tracked")
+        exit(1)
     tags = th_utils.get_resource_tags(resource_url)
     for tag in tags :
         print(tag)

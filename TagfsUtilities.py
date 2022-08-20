@@ -115,5 +115,9 @@ class TagfsTagHandlerUtilities :
 
     def get_resource_tags(self, resource_url) :
         resource_url = normalize_url(resource_url)
+        is_resource_tracked = self.is_resource_tracked(resource_url)
+        tags = []
+        if not is_resource_tracked :
+            return tags
         tags = self.th.get_resource_tags(resource_url)
-        return tags
+        return tags   
