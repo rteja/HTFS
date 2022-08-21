@@ -32,6 +32,10 @@ _tagfs_completions()
       COMPREPLY=($(compgen -f -- "${COMP_WORDS[2]}"))
     fi
 
+    if [ "${COMP_WORDS[1]}" == "lstags" ]; then
+      COMPREPLY=($(compgen -W "$(tagfs lstags)" "${COMP_WORDS[2]}"))
+    fi
+
     if [ "${COMP_WORDS[1]}" == "lsresources" ]; then
       COMPREPLY=($(compgen -W "$(tagfs lstags)" "${COMP_WORDS[2]}"))
     fi
