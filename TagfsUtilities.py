@@ -10,8 +10,7 @@ logging.basicConfig(level='INFO')
 logobj = logging.getLogger(__name__)
 
 def normalize_url(resource_url) :
-    tagdb = get_tags_db()
-    tag_boundary = os.path.dirname(tagdb)
+    tag_boundary = get_tag_fs_boundary()
     normalized_url = get_relative_path(os.path.realpath(resource_url), tag_boundary)
     normalized_url = normalized_url.replace("\\","/")
     return normalized_url
@@ -80,6 +79,7 @@ class TagfsTagHandlerUtilities :
         return (rid > 0)
 
     def del_resource(self, resource_url) :
+        resource_url = normalize_url(resource_url)
         self.th.del_resource(resource_url)
 
     def tag_resource(self, resource_url, tags) :
@@ -115,9 +115,8 @@ class TagfsTagHandlerUtilities :
 
     def get_resource_tags(self, resource_url) :
         resource_url = normalize_url(resource_url)
-        is_resource_tracked = self.is_resource_tracked(resource_url)
+        res_id = self.th.get_resource_id(resource_url)
         tags = []
-        if not is_resource_tracked :
-            return tags
-        tags = self.th.get_resource_tags(resource_url)
-        return tags   
+        if res_id > 0 :
+            tags = self.th.get_resource_tags(resource_url)
+        return tags

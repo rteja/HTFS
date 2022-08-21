@@ -3,7 +3,7 @@ import re
 
 # Implementation of shuning yard algorithm
 class QueryEvaluator :
-    def __init__(self, th) :
+    def __init__(self, th: TagHandler.TagHandler) :
         self.th = th
         self.operators = []
         self.values = []
