@@ -153,6 +153,21 @@ def _get_resource_tags(args) :
         print(tag)
     exit(0)
 
+def _rm_resource_tags(args) :
+    if len(args) != 1 :
+        improper_usage()
+    resource_url = args[0]
+    th_utils = get_tagfs_utils()
+    is_resource_tracked = th_utils.is_resource_tracked(resource_url)
+    if not is_resource_tracked :
+        logobj.error("resource not tracked")
+        exit(1)
+    tags = th_utils.get_resource_tags(resource_url)
+    th_utils.untag_resource(resource_url, tags)
+    logobj.info("removed tags" + str(tags) +  " on the resource")
+    exit(0)
+
+
 def print_usage():
     print("HTFS: Hierarchially Tagged File System")
     cmd = "\t" + os.path.basename(sys.argv[0])
@@ -167,6 +182,7 @@ def print_usage():
     print(cmd + " untagresource \t remove tags on tracked resources")
     print(cmd + " lsresources \t list resources with given tags")
     print(cmd + " getresourcetags \t list all the tags of the resource")
+    print(cmd + " rmresourcetags \t remove all tags on the resource")
     print(cmd + " rmresource \t untrack the resource in the db")
     print(cmd + " mvresource \t move resource to a new path")
 
@@ -203,15 +219,13 @@ def tagfs(arg) :
         _tag_resource(arg[1:])
     elif arg[0] == "untagresource" :
         _untag_resource(arg[1:])
-    elif arg[0] == "updateresourceurl" :
-        unimplemented_feature_error()
     elif arg[0] == "lsresources" :
         #get_resources_by_tag(arg[1:])
         _get_resources_by_tag_expr(arg[1:])
     elif arg[0] == "getresourcetags" :
         _get_resource_tags(arg[1:])
     elif arg[0] == "rmresourcetags" :
-        unimplemented_feature_error()
+        _rm_resource_tags(arg[1:])
     elif arg[0] == "rmresource" :
         _del_resource(arg[1:])
     elif arg[0] == "mvresource" :
