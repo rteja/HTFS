@@ -203,7 +203,7 @@ class TagHandler() :
             tag_ids.append(r[0])
         return tag_ids
 
-    def get_resource_url(self, res_id) :
+    def get_resource_url(self, res_id) -> str :
         query_str = "SELECT URL FROM RESOURCES WHERE ID=" + str(res_id)+ ";"
         res = self.conn.execute(query_str)
         r = res.fetchone()
@@ -212,14 +212,31 @@ class TagHandler() :
             url = r[0]
         return url
 
+    def update_resource_url_by_id(self, resource_id, resource_url) :
+        query_str = "UPDATE RESOURCES SET URL=\"" + str(resource_url) + "\"" + " WHERE ID=" + str(resource_id) + ";"
+        self.conn.execute(query_str)
+        self.conn.commit()
+
     def update_resource_url(self, resource_url, new_resource_url) :
         res_id = self.get_resource_id(resource_url)
         if res_id < 0 :
             logobj.error("resource not tracked")
-        query_str = "UPDATE RESOURCES SET URL=\"" + str(new_resource_url) + "\"" + " WHERE ID=" + str(res_id) + ";"
-        self.conn.execute(query_str)
-        self.conn.commit()
+        self.update_resource_url_by_id(res_id, new_resource_url)
 
+    def update_resource_sub_url(self, sub_resource_url, update_url) :
+        res_ids = self.get_resource_ids_containing_url(sub_resource_url)
+        for res_id in res_ids :
+            url = self.get_resource_url(res_id)
+            url = url.replace(sub_resource_url, update_url, 1)
+            self.update_resource_url_by_id(res_id, url)
+
+    def get_resource_ids_containing_url(self, sub_resource_url) :
+        query_str = "SELECT ID FROM RESOURCES WHERE URL LIKE " + "\"%" + sub_resource_url + "%\""
+        res = self.conn.execute(query_str)
+        res_ids = []
+        for r in res :
+            res_ids.append(r[0])
+        return res_ids
 
     def get_resource_id(self, resource_url) :
         query_str = "SELECT ID FROM RESOURCES WHERE URL=\"" + resource_url + "\";"

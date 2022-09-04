@@ -96,6 +96,11 @@ class TagfsTagHandlerUtilities :
         resource_url = normalize_url(resource_url)
         target_url = normalize_url(target_url)
         self.th.update_resource_url(resource_url, target_url)
+
+    def update_resource_sub_url(self, resource_url, update_url) :
+        resource_url = normalize_url(resource_url)
+        update_url = normalize_url(update_url)
+        self.th.update_resource_sub_url(resource_url, update_url)
         
     def get_resources_by_tag(self, tags) :
         tags_closure = self.th.get_tag_closure(tags)
