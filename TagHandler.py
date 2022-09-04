@@ -249,8 +249,6 @@ class TagHandler() :
             query_str = "INSERT INTO RESOURCELINKS VALUES (" + str(resource_id) + "," + str(tag_id) + ");"
             self.conn.execute(query_str)
             self.conn.commit()
-        else :
-            logobj.warning("resource already has the tag")
         
     def del_all_resource_tags(self, resource_id) :
         query_str = "DELETE FROM RESOURCELINKS WHERE RESID=" + str(resource_id) + ";"
