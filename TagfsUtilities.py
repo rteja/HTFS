@@ -1,4 +1,5 @@
 import os
+import re
 import logging
 
 import TagHandler
@@ -22,10 +23,12 @@ def get_tag_fs_boundary() :
         if os.path.exists(tag_fs_db_file) :
             return os.path.realpath(tag_fs_db_file_path)
         else :
-            # this is os dependent -- reconsider this implementation
-            if os.path.realpath(tag_fs_db_file_path) == "/" :
+            realpath = os.path.realpath(tag_fs_db_file_path)
+            if realpath == "/" :
                 return None
-        tag_fs_db_file_path = os.path.pardir + "/" + tag_fs_db_file_path
+            elif re.fullmatch("[A-Z]:\\\\", realpath) :
+                return None
+        tag_fs_db_file_path = os.path.pardir + os.path.sep + tag_fs_db_file_path
         tag_fs_db_file = tag_fs_db_file_path + _tagfsdb
 
 def full_url(normzlied_resource_url) :
