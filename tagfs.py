@@ -45,7 +45,9 @@ def _add_tags(tags) :
     if len(tags) < 1 :
         improper_usage()
     th_utils = get_tagfs_utils()
-    th_utils.add_tags(tags)
+    new_tags = th_utils.add_tags(tags)
+    if len(new_tags) > 0 :
+        logobj.info("new tags added: " + str(new_tags))
     exit(0)
 
 def _rename_tag(args) :

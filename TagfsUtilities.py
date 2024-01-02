@@ -46,6 +46,14 @@ def get_tags_db() :
     tagdb = os.path.join(tag_boundary, _tagfsdb)
     return tagdb
 
+def is_hierarchial_tag(tag) :
+    if tag.find('/') == -1 :
+        return True
+    return False
+
+def get_hierarchical_tag_split(tag) :
+    atomic_tags = tag.split('/')
+    return atomic_tags
 
 class TagfsTagHandlerUtilities :
     def __init__(self, tagfs_boundary) :
@@ -62,8 +70,21 @@ class TagfsTagHandlerUtilities :
         return taglist
         
     def add_tags(self, tags) :
+        added_tags = []
         for tag in tags :
-            self.th.add_tag(tag)
+            htags = get_hierarchical_tag_split(tag);            
+            prev_tag = htags[0]
+            assert(len(prev_tag) != 0)
+            is_new_tag = self.th.add_tag(prev_tag)
+            if is_new_tag :
+                added_tags.append(prev_tag)
+            for i in range(1,len(htags)) :
+                cur_tag = htags[i]
+                is_new_tag = self.th.add_tag(cur_tag)
+                if is_new_tag :
+                    added_tags.append(cur_tag)
+                self.th.link_tag(cur_tag, prev_tag)            
+        return added_tags
 
     def rename_tag(self, tag_name, new_tag_name) :
         res = self.th.rename_tag(tag_name, new_tag_name)
